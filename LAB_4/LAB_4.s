@@ -1,4 +1,4 @@
-@ s -march=armv7-a -mthumb LAB_4.s -o LAB_4.o
+@ as -march=armv7-a -mthumb LAB_4.s -o LAB_4.o
 @ gcc -march=armv7-a -mthumb LAB_4.o -o LAB_4
 
 .syntax unified
@@ -21,20 +21,20 @@ out_txt: .asciz "\nSorry! Your selection is out of stock.\n\n"
 out_stock_txt: .asciz "\n\n\nSorry! We are all out of stock.\n"
 inventory_head_txt: .asciz "\nDRINK  SUPPLY\n"
 inventory_txt: .asciz "  %d\t %d\n"
-Bye_txt: .asciz "Goodbye! Returned %d change.\n"
+bye_txt: .asciz "Goodbye! Returned %d change.\n"
 format_int: .asciz "%d"
 format_char: .asciz " %c"
-confirm_input: .Byte 0
+confirm_input: .byte 0
 
 .section .text
 .global main
 .thumb_func
 
 main:
-    LDR r0, =welcome_txt
+    LDR R0, =welcome_txt
     BL printf
 
-    MOVS r4, #0
+    MOVS R4, #0
     B get_money
 
 .thumb_func
@@ -42,137 +42,137 @@ get_money:
     LDR R0, =insert_money_txt
     BL printf
 
-    LDR r0, =format_int
-    LDR r1, =input_money
+    LDR R0, =format_int
+    LDR R1, =input_money
     BL scanf
 
-    LDR r2, =input_money
-    LDR r2, [r2]
+    LDR R2, =input_money
+    LDR R2, [R2]
 
-    CMP r2, #5
+    CMP R2, #5
     BEQ update_total
-    CMP r2, #10
+    CMP R2, #10
     BEQ update_total
-    CMP r2, #25
+    CMP R2, #25
     BEQ update_total
-    CMP r2, #100
+    CMP R2, #100
     BEQ update_total
 
     B get_money
 
 .thumb_func
 update_total:
-    ADD r4, r4, r2
-    LDR r0, =total_money_txt
-    MOV r1, r4
+    ADD R4, R4, R2
+    LDR R0, =total_money_txt
+    MOV R1, R4
     BL printf
 
-    CMP r4, #55
+    CMP R4, #55
     BLT get_money
 
     B get_drink
 
 .thumb_func
 get_drink:
-    LDR r0, =select_drink_txt
+    LDR R0, =select_drink_txt
     BL printf
 
-    LDR r0, =format_int
-    LDR r1, =selected_drink
+    LDR R0, =format_int
+    LDR R1, =selected_drink
     BL scanf
 
-    LDR r5, =selected_drink
-    LDR r5, [r5]
+    LDR R5, =selected_drink
+    LDR R5, [R5]
 
-    LDR r0, =confirmation_drink_txt
-    MOV r1, r5
+    LDR R0, =confirmation_drink_txt
+    MOV R1, R5
     BL printf
 
-    LDR r0, =format_char
-    LDR r1, =confirm_input
+    LDR R0, =format_char
+    LDR R1, =confirm_input
     BL scanf
 
-    LDR r6, =confirm_input
-    LDR r6, [r6]
-    CMP r6, #'y'
+    LDR R6, =confirm_input
+    LDR R6, [R6]
+    CMP R6, #'y'
     BEQ validate_confirmed_choice
     B get_drink
 
 .thumb_func
 validate_confirmed_choice:
-    CMP r5, #1
+    CMP R5, #1
     BLt invalid_selection
-    CMP r5, #5
+    CMP R5, #5
     BEQ exit_program
-    CMP r5, #6
+    CMP R5, #6
     BEQ display_inventory
-    CMP r5, #6
+    CMP R5, #6
     BGT invalid_selection
 
     B confirmed_choice
 
 .thumb_func
 confirmed_choice:
-    SUB r5, r5, #1
-    LDR r0, =drink_inventory
-    ADD r0, r0, r5, lsl #2
-    LDR r1, [r0]
-    SUB r1, r1, #1
+    SUB R5, R5, #1
+    LDR R0, =drink_inventory
+    ADD R0, R0, R5, lsl #2
+    LDR R1, [R0]
+    SUB R1, R1, #1
 
-    CMP r1, #0
+    CMP R1, #0
     BLT out_of_stock
 
-    STR r1, [r0]
+    STR R1, [R0]
 
-    SUB r4, r4, #55
+    SUB R4, R4, #55
 
-    LDR r0, =dispense_txt
-    MOV r1, r5
-    ADD r1, r1, #1
-    MOV r2, r4
+    LDR R0, =dispense_txt
+    MOV R1, R5
+    ADD R1, R1, #1
+    MOV R2, R4
     BL printf
 
-    MOVS r4, #0
+    MOVS R4, #0
 
     B get_money
 
 .thumb_func
 out_of_stock:
-    LDR r0, =out_txt
+    LDR R0, =out_txt
     BL printf
     B get_drink
 
 .thumb_func
 invalid_selection:
-    LDR r0, =invalid_selection_txt
+    LDR R0, =invalid_selection_txt
     BL printf
     B get_drink
 
 .thumb_func
 display_inventory:
-    MOVS r7, #0
-    LDR r0, =inventory_head_txt
+    MOVS R7, #0
+    LDR R0, =inventory_head_txt
     BL printf
     B display_loop
 
 .thumb_func
 display_loop:
-    CMP r7, #4
+    CMP R7, #4
     BEQ get_drink
-    LDR r0, =drink_inventory
-    ADD r0, r0, r7, lsl #2
-    LDR r2, [r0]
-    LDR r0, =inventory_txt
-    ADD r1, r7, #1
+    LDR R0, =drink_inventory
+    ADD R0, R0, R7, lsl #2
+    LDR R2, [R0]
+    LDR R0, =inventory_txt
+    ADD R1, R7, #1
     BL printf
-    ADDS r7, r7, #1
+    ADDS R7, R7, #1
     B display_loop
 
 .thumb_func
 exit_program:
-    LDR r0, =Bye_txt
-    MOV r1, r4
+    LDR R0, =bye_txt
+    MOV R1, R4
     BL printf
-    MOVS r0, #0
+    MOVS R0, #0
     BX lr
 
